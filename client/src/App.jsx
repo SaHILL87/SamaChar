@@ -10,6 +10,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import Articles from "./pages/ArticleList";
 import ArticleDetails from "./pages/ArticlePage";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "logout",
         element: <Logout />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },

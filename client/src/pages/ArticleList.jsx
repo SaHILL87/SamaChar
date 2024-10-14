@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Navbar from "../components/Navbar";
 
 const Articles = () => {
   const [articleList, setArticleList] = useState([]);
@@ -24,6 +25,8 @@ const Articles = () => {
   }, []);
 
   return (
+    <>
+    <Navbar/>
     <div className="p-8 bg-gray-100">
       <h1 className="text-3xl font-bold mb-6">Latest News</h1>
       {error && <p className="text-red-500">{error}</p>}{" "}
@@ -42,6 +45,7 @@ const Articles = () => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 
