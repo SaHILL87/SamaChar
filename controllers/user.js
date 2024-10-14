@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -22,12 +23,12 @@ const login = async (req, res) => {
         }
       );
 
-      return res.status(200).json({ msg: "user logged in", token });
+      return res.status(200).json({ msg: "User logged in", token });
     } else {
       return res.status(400).json({ msg: "Bad password" });
     }
   } else {
-    return res.status(400).json({ msg: "Bad credentails" });
+    return res.status(400).json({ msg: "Bad credentials" });
   }
 };
 
@@ -42,19 +43,19 @@ const dashboard = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   let users = await User.find({});
-
   return res.status(200).json({ users });
 };
 
 const register = async (req, res) => {
   let foundUser = await User.findOne({ email: req.body.email });
   if (foundUser === null) {
-    let { username, email, password } = req.body;
+    let { username, email, password, categories } = req.body;
     if (username.length && email.length && password.length) {
       const person = new User({
         name: username,
         email: email,
         password: password,
+        categories: categories, // Save selected categories
       });
       await person.save();
       return res.status(201).json({ person });

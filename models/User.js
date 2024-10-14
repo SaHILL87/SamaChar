@@ -8,7 +8,6 @@ const UserSchema = new mongoose.Schema({
     minlength: 3,
     maxlength: 50,
   },
-
   email: {
     type: String,
     required: [true, "Please provide email"],
@@ -24,6 +23,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide password"],
     minlength: 3,
+  },
+  categories: {
+    type: [String],
+    enum: ["news", "business", "health", "entertainment", "sport", "politics"],
+    default: [],
   },
 });
 

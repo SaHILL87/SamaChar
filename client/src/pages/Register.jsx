@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import Image from "../assets/image.png";
 import Logo from "../assets/logo.png";
 import GoogleSvg from "../assets/icons8-google.svg";
-import { FaEye } from "react-icons/fa6";
-import { FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import "../styles/Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -11,10 +10,22 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const navigate = useNavigate();
   const [token, setToken] = useState(
     JSON.parse(localStorage.getItem("auth")) || ""
   );
+
+  const handleCategoryChange = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedCategories([...selectedCategories, value]);
+    } else {
+      setSelectedCategories(
+        selectedCategories.filter((category) => category !== value)
+      );
+    }
+  };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -36,13 +47,14 @@ const Login = () => {
           username: name + " " + lastname,
           email,
           password,
+          categories: selectedCategories, // Send selected categories
         };
         try {
           const response = await axios.post(
             "http://localhost:5000/api/v1/register",
             formData
           );
-          toast.success("Registration successfull");
+          toast.success("Registration successful");
           navigate("/login");
         } catch (err) {
           toast.error(err.message);
@@ -136,6 +148,66 @@ const Login = () => {
                   />
                 )}
               </div>
+
+              {/* Category Selection */}
+              <div className="category-selection">
+                <h3>Select your interests:</h3>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="news"
+                    value="news"
+                    onChange={handleCategoryChange}
+                  />
+                  <label htmlFor="news">News</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="business"
+                    value="business"
+                    onChange={handleCategoryChange}
+                  />
+                  <label htmlFor="business">Business</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="health"
+                    value="health"
+                    onChange={handleCategoryChange}
+                  />
+                  <label htmlFor="health">Health</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="entertainment"
+                    value="entertainment"
+                    onChange={handleCategoryChange}
+                  />
+                  <label htmlFor="entertainment">Entertainment</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="sport"
+                    value="sport"
+                    onChange={handleCategoryChange}
+                  />
+                  <label htmlFor="sport">Sport</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="politics"
+                    value="politics"
+                    onChange={handleCategoryChange}
+                  />
+                  <label htmlFor="politics">Politics</label>
+                </div>
+              </div>
+
               <div className="register-center-buttons">
                 <button type="submit">Sign Up</button>
                 <button type="submit">
