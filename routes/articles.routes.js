@@ -26,4 +26,44 @@ router.get("/article/:id", async (req, res) => {
   }
 });
 
+router.get("/articles/search", async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ error: "Search query is required" });
+  }
+
+  try {
+    const searchResults = await articles
+      .find({
+        $or: [
+          { Headline: { $regex: query, $options: "i" } }, // Case-insensitive search in Headline
+          { Description: { $regex: query, $options: "i" } }, // Case-insensitive search in Description
+          { Keywords: { $regex: query, $options: "i" } }, // Case-insensitive search in Keywords
+        ],
+      })
+      .select("_id Headline Description");
+
+    res.status(200).json({ articles: searchResults });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/articles/category", async (req, res) => {
+  const { category } = req.query;
+
+  if (!category) {
+    return res.status(400).json({ error: "Category is required" });
+  }
+
+  try {
+    const categoryResults = await articles.find({ Category: category });
+
+    res.status(200).json({ articles: categoryResults });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

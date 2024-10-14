@@ -46,7 +46,7 @@ const Login = () => {
   useEffect(() => {
     if (token !== "") {
       toast.success("You already logged in");
-      navigate("/dashboard");
+      navigate("/articles");
     }
   }, []);
 
