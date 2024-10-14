@@ -4,10 +4,11 @@ import dotenv from "dotenv"; // Import dotenv
 dotenv.config();
 // expressAsyncErrors();
 
-import connectDB from "./db/connect.js"; // Add .js extension if needed
+import connectDB from "./db/connect.js";
 import express from "express";
 import cors from "cors";
-import mainRouter from "./routes/user.js"; // Add .js extension if needed
+import mainRouter from "./routes/user.js";
+import articleRouter from "./routes/articles.routes.js";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use(cors());
 app.use("/api/v1", mainRouter);
+app.use("/api/v1", articleRouter);
 
 const port = process.env.PORT || 3000;
 

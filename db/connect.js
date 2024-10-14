@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const connectDB = (uri) => {
   mongoose
-    .connect(uri, { dbName: "samachar" })
+    .connect(uri, { dbName: "Cluster0" })
     .then((data) => {
       console.log(`Connected to DB : ${data.connection.host}`);
     })
