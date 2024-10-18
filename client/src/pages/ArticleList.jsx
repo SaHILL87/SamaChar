@@ -65,7 +65,11 @@ const Articles = () => {
                   <h2 className="text-lg sm:text-xl font-bold mb-2 text-[#1E3A8A]">
                     {article.Headline}
                   </h2>
-                  <p className="text-gray-600">{article.Description}</p>
+                  <p className="text-gray-600">
+                    {article.Description.length > 100
+                      ? `${article.Description.substring(0, 200)}...`
+                      : article.Description}
+                  </p>
                 </div>
                 <div className="mt-4">
                   <p className="text-sm text-gray-500">

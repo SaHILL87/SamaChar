@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema({
@@ -29,6 +29,18 @@ const UserSchema = new mongoose.Schema({
     enum: ["news", "business", "health", "entertainment", "sport", "politics"],
     default: [],
   },
+  likedArticles: [
+    {
+      type: Types.ObjectId,
+      ref: "articles",
+    },
+  ],
+  watchedArticles: [
+    {
+      type: Types.ObjectId,
+      ref: "articles",
+    },
+  ],
 });
 
 UserSchema.pre("save", async function (next) {

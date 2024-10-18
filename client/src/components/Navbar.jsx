@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Filter, User } from "lucide-react";
+import { Search, Filter, User, Newspaper } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -43,7 +43,10 @@ export default function Navbar() {
   return (
     <nav className="bg-[#1E3A8A] text-white p-4 shadow-md">
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-        <div className="text-2xl font-bold">Samachar</div>
+        <div className="text-2xl font-bold flex items-center space-x-4">
+          <Newspaper className="h-6 w-6" />
+          <span>Samachar</span>
+        </div>
 
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
           <div className="relative w-full md:w-auto">
