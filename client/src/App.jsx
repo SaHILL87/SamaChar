@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Articles from "./pages/ArticleList";
 import ArticleDetails from "./pages/ArticlePage";
 import Profile from "./pages/Profile";
+import LikedArticles from "./pages/LikedArticles";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
+      },
+      {
+        path: "liked-articles",
+        element: <LikedArticles />,
       },
     ],
   },

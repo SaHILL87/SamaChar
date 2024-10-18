@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Filter, User, Newspaper } from "lucide-react";
+import { Search, Filter, User, Newspaper, Heart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -57,7 +57,6 @@ export default function Navbar() {
               onChange={handleSearchChange}
               className="w-full md:w-64 py-2 px-4 rounded-full bg-[#F3F4F6] text-[#1E3A8A] focus:outline-none focus:ring-2 focus:ring-[#10B981] transition duration-300"
             />
-
             <Search
               className="absolute right-3 top-2.5 text-[#1E3A8A]"
               size={20}
@@ -85,51 +84,25 @@ export default function Navbar() {
               <Filter size={24} />
             </button>
 
+            {/* Add the heart icon */}
+            <Link to="/liked-articles">
+              <button className="hover:bg-[#3B5DAA] bg-[#1E3A8A] text-white p-3 rounded-full transition duration-300 hover:shadow-lg">
+                <Heart size={24} />
+              </button>
+            </Link>
+
             <Link to="/profile">
               <button className="hover:bg-[#3B5DAA] bg-[#1E3A8A] text-white p-3 rounded-full transition duration-300 hover:shadow-lg">
                 <User size={24} />
               </button>
             </Link>
+
             <Link to="/logout" className="logout-button">
               Logout
             </Link>
           </div>
         </div>
       </div>
-
-      {isFilterOpen && (
-        <div className="container mx-auto mt-4 p-4 bg-white text-[#1E3A8A] rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-2">Filters</h3>
-          <div className="flex flex-wrap gap-4">
-            <select
-              className="p-2 border rounded bg-[#F3F4F6] text-[#374151]"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">Category</option>
-              <option value="news">News</option>
-              <option value="business">Business</option>
-              <option value="health">Health</option>
-            </select>
-
-            <button
-              onClick={handleFilterApply}
-              className="bg-[#10B981] text-white p-2 rounded-lg shadow hover:bg-[#059669] hover:shadow-lg transition duration-300"
-            >
-              Apply Filters
-            </button>
-            <button
-              onClick={() => {
-                setCategory("");
-                navigate("/articles");
-              }}
-              className="bg-red-500 text-white p-2 rounded-lg shadow hover:bg-[#c11e1b] hover:shadow-lg transition duration-300"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      )}
     </nav>
   );
 }

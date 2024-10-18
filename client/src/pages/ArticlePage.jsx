@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons"; // Unliked state
 
 const ArticleDetails = () => {
   const navigate = useNavigate();
@@ -13,6 +16,7 @@ const ArticleDetails = () => {
   );
   const [summary, setSummary] = useState(null); // State to hold summary
   const [sentiment, setSentiment] = useState(null); // State to hold sentiment
+  const [liked, setLiked] = useState(false); // To track whether article is liked
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -27,6 +31,11 @@ const ArticleDetails = () => {
           axiosConfig
         );
         setArticle(response.data?.article);
+
+        // Ensure the liked state is set correctly based on the fetched article data
+        if (response.data?.article?.liked !== undefined) {
+          setLiked(response.data.article.liked); // Set the "liked" state based on the API response
+        }
       } catch (error) {
         console.error("Error fetching article:", error);
         toast.error("Failed to fetch article details.");
@@ -73,6 +82,29 @@ const ArticleDetails = () => {
     }
   };
 
+  // Function to handle liking an article
+  const handleLikeArticle = async () => {
+    try {
+      const axiosConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/like-article",
+        { articleId: id },
+        axiosConfig
+      );
+
+      setLiked(true); // Update liked state to true
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error liking article:", error);
+      toast.error("Failed to like article.");
+    }
+  };
+
   if (!article) return <p className="text-center mt-10 text-lg">Loading...</p>;
 
   return (
@@ -84,20 +116,38 @@ const ArticleDetails = () => {
             {article.Headline}
           </h1>
           <div className="flex space-x-4">
+            {/* Summarize button */}
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
               onClick={handleSummarization}
             >
               Summarize
             </button>
+
+            {/* Sentiment Analysis button */}
             <button
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
               onClick={handleSentimentAnalysis}
             >
               Sentiment Analysis
             </button>
+
+            {/* Like (Heart Icon) */}
+            <button
+              className="focus:outline-none"
+              onClick={handleLikeArticle}
+              disabled={liked} // Disable if already liked
+            >
+              <FontAwesomeIcon
+                icon={liked ? solidHeart : regularHeart}
+                className={`text-3xl transition duration-200 ${
+                  liked ? "text-red-500" : "text-gray-400"
+                }`}
+              />
+            </button>
           </div>
         </div>
+
         <p className="text-sm text-gray-500 mb-6">
           {article.Author} -{" "}
           {new Date(article["Date published"]).toLocaleDateString()}
