@@ -47,10 +47,12 @@ const ArticleDetails = () => {
   const handleSummarization = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/summarize", // Replace with your Python API endpoint
+        "http://127.0.0.1:5000/summarize_and_sentiment", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
-      setSummary(response.data.summary); // Assuming your Python API returns the summary here
+      setSummary(response.data.summary);
+      setSentiment(response.data.sentiment);
+      console.log(response.data) // Assuming your Python API returns the summary here
     } catch (error) {
       console.error("Error summarizing article:", error);
       toast.error("Failed to summarize article.");
@@ -61,7 +63,7 @@ const ArticleDetails = () => {
   const handleSentimentAnalysis = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/sentiment", // Replace with your Python API endpoint
+        "http://localhost:5000/sentiment", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
       setSentiment(response.data.sentiment); // Assuming your Python API returns the sentiment here

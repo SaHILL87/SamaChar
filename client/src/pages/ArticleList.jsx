@@ -67,7 +67,7 @@ const Articles = () => {
                   </h2>
                   <p className="text-gray-600">
                     {article.Description.length > 100
-                      ? `${article.Description.substring(0, 200)}...`
+                      ? `${article.Description.substring(0, 100)}...`
                       : article.Description}
                   </p>
                 </div>
