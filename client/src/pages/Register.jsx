@@ -70,7 +70,7 @@ const Login = () => {
   useEffect(() => {
     if (token !== "") {
       toast.success("You already logged in");
-      navigate("/dashboard");
+      navigate("/articles");
     }
   }, []);
 
@@ -210,10 +210,6 @@ const Login = () => {
 
               <div className="register-center-buttons">
                 <button type="submit">Sign Up</button>
-                <button type="submit">
-                  <img src={GoogleSvg} alt="" />
-                  Sign Up with Google
-                </button>
               </div>
             </form>
           </div>

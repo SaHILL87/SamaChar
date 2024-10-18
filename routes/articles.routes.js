@@ -1,11 +1,46 @@
 import express from "express";
 import articles from "../models/article.models.js";
+import authMiddleware from "../middleware/auth.js";
+import User from "../models/User.js";
 const router = express.Router();
-
 // Fetch all articles
-router.get("/articles", async (req, res) => {
+// router.get("/articles", authMiddleware, async (req, res) => {
+//   try {
+//     const articleList = await articles.find({}).limit(10);
+
+//     res.status(200).json({ articleList });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+router.get("/articles", authMiddleware, async (req, res) => {
   try {
-    const articleList = await articles.find({}).limit(10);
+    const userId = req.user.id; // Assuming auth middleware sets this
+
+    // Fetch the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Ensure categories is an array, even if it's empty
+    const categories = user.categories || [];
+    const randomCategories = Math.random() * categories.length;
+    const finalCategory = categories[Math.floor(randomCategories)];
+
+    if (categories.length === 0) {
+      // If user has no selected categories, return an empty list
+      return res
+        .status(200)
+        .json({ articleList: [] }, "No categories selected");
+    }
+
+    // Find articles that match the user's selected categories
+    const articleList = await articles.aggregate([
+      { $match: { Category: { $in: user.categories } } }, // Match documents containing the specific tag
+      { $sample: { size: 20 } }, // Randomly select 'numberOfDocuments'
+    ]);
 
     res.status(200).json({ articleList });
   } catch (err) {
@@ -58,9 +93,11 @@ router.get("/articles/category", async (req, res) => {
   }
 
   try {
-    const categoryResults = await articles.find({ Category: category });
+    const categoryResults = await articles
+      .find({ Category: category })
+      .limit(10);
 
-    res.status(200).json({ articles: categoryResults });
+    res.status(200).json({ articleList: categoryResults });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
