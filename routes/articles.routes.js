@@ -49,13 +49,28 @@ router.get("/articles", authMiddleware, async (req, res) => {
 });
 
 // Fetch a specific article by ID
-router.get("/article/:id", async (req, res) => {
+router.get("/article/:id", authMiddleware, async (req, res) => {
   try {
+    // Find the article by ID
     const article = await articles.findById(req.params.id);
     if (!article) {
       return res.status(404).json({ msg: "Article not found" });
     }
-    res.status(200).json({ article });
+
+    // Get the user from the request (assuming authMiddleware adds user info to the request)
+    const userId = req.user.id;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the article is liked by the user (article ID exists in user's likedArticles array)
+    const liked = user.likedArticles.includes(article._id.toString()); // Ensure proper type comparison
+
+    // Send the article along with the "liked" status
+    res.status(200).json({ article: { ...article._doc, liked } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -100,6 +115,47 @@ router.get("/articles/category", async (req, res) => {
     res.status(200).json({ articleList: categoryResults });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/like-article", authMiddleware, async (req, res) => {
+  try {
+    const { articleId } = req.body;
+
+    if (!articleId) {
+      return res.status(400).json({ message: "Article ID is required" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.likedArticles.includes(articleId)) {
+      user.likedArticles.push(articleId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Article liked successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error Liking Article" });
+  }
+});
+
+router.get("/liked-articles", authMiddleware, async (req, res) => {
+  const userId = req.user.id; // Assuming you are using authentication middleware
+
+  try {
+    const user = await User.findById(userId).populate("likedArticles"); // Assuming you are storing liked articles as ObjectIds
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const likedArticles = user.likedArticles;
+
+    res.status(200).json({ likedArticles });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching liked articles" });
   }
 });
 
