@@ -80,7 +80,7 @@ const ArticleDetails = () => {
   const handleSummarization = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/summarize_and_sentiment", // Replace with your Python API endpoint
+        "http://127.0.0.1:5001/summarize_and_sentiment", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
       setSummary(response.data.summary);
@@ -96,7 +96,7 @@ const ArticleDetails = () => {
   const handleSentimentAnalysis = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/translate_to_hindi", // Replace with your Python API endpoint
+        "http://127.0.0.1:5001/translate_to_hindi", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
       SetTranslatedText(response.data.hindi_translation); // Assuming your Python API returns the sentiment here
