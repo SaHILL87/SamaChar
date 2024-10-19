@@ -61,7 +61,7 @@ const ArticleDetails = () => {
       );
       setSummary(response.data.summary);
       setSentiment(response.data.sentiment);
-      console.log(response.data) // Assuming your Python API returns the summary here
+      console.log(response.data); // Assuming your Python API returns the summary here
     } catch (error) {
       console.error("Error summarizing article:", error);
       toast.error("Failed to summarize article.");
@@ -116,15 +116,12 @@ const ArticleDetails = () => {
             {article.Headline}
           </h1>
           <div className="flex space-x-4">
-            {/* Summarize button */}
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
               onClick={handleSummarization}
             >
               Summarize
             </button>
-
-            {/* Sentiment Analysis button */}
             <button
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
               onClick={handleSentimentAnalysis}
@@ -147,7 +144,6 @@ const ArticleDetails = () => {
             </button>
           </div>
         </div>
-
         <p className="text-sm text-gray-500 mb-6">
           {article.Author} -{" "}
           {new Date(article["Date published"]).toLocaleDateString()}

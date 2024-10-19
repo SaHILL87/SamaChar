@@ -92,7 +92,7 @@ def translate():
     if 'text' not in data:
         return jsonify({"error": "No text provided"}), 400
     
-    text = data['text']
+    text = clean_text(data['text'])
     translation = translate_to_hindi(text)
     
     return jsonify({
