@@ -48,28 +48,22 @@ router.get("/articles", authMiddleware, async (req, res) => {
   }
 });
 
-// Fetch a specific article by ID
 router.get("/article/:id", authMiddleware, async (req, res) => {
   try {
-    // Find the article by ID
     const article = await articles.findById(req.params.id);
     if (!article) {
       return res.status(404).json({ msg: "Article not found" });
     }
 
-    // Get the user from the request (assuming authMiddleware adds user info to the request)
     const userId = req.user.id;
 
-    // Find the user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if the article is liked by the user (article ID exists in user's likedArticles array)
-    const liked = user.likedArticles.includes(article._id.toString()); // Ensure proper type comparison
+    const liked = user.likedArticles.includes(article._id.toString());
 
-    // Send the article along with the "liked" status
     res.status(200).json({ article: { ...article._doc, liked } });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -87,9 +81,9 @@ router.get("/articles/search", async (req, res) => {
     const searchResults = await articles
       .find({
         $or: [
-          { Headline: { $regex: query, $options: "i" } }, // Case-insensitive search in Headline
-          { Description: { $regex: query, $options: "i" } }, // Case-insensitive search in Description
-          { Keywords: { $regex: query, $options: "i" } }, // Case-insensitive search in Keywords
+          { Headline: { $regex: query, $options: "i" } },
+          { Description: { $regex: query, $options: "i" } },
+          { Keywords: { $regex: query, $options: "i" } },
         ],
       })
       .select("_id Headline Description");
@@ -156,6 +150,54 @@ router.get("/liked-articles", authMiddleware, async (req, res) => {
     res.status(200).json({ likedArticles });
   } catch (error) {
     res.status(500).json({ message: "Error fetching liked articles" });
+  }
+});
+
+router.post("/unlike-article", authMiddleware, async (req, res) => {
+  try {
+    const { articleId } = req.body;
+
+    if (!articleId) {
+      return res.status(400).json({ message: "Article ID is required" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.likedArticles.includes(articleId)) {
+      user.likedArticles = user.likedArticles.filter(
+        (id) => id.toString() !== articleId
+      );
+      await user.save();
+    }
+    res.status(200).json({ message: "Article unliked successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error Unliking Article" });
+  }
+});
+
+router.post("/watched-article", authMiddleware, async (req, res) => {
+  try {
+    const { articleId } = req.body;
+
+    if (!articleId) {
+      return res.status(400).json({ message: "Article ID is required" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.watchedArticles.includes(articleId)) {
+      user.watchedArticles.push(articleId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Article watched successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error adding watched article" });
   }
 });
 

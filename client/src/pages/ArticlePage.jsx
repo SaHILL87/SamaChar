@@ -32,9 +32,8 @@ const ArticleDetails = () => {
         );
         setArticle(response.data?.article);
 
-        // Ensure the liked state is set correctly based on the fetched article data
         if (response.data?.article?.liked !== undefined) {
-          setLiked(response.data.article.liked); // Set the "liked" state based on the API response
+          setLiked(response.data.article.liked);
         }
       } catch (error) {
         console.error("Error fetching article:", error);
@@ -43,6 +42,30 @@ const ArticleDetails = () => {
     };
 
     fetchArticle();
+  }, [id, token]);
+
+  useEffect(() => {
+    const updateWatchingHistory = async () => {
+      try {
+        const axiosConfig = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.post(
+          `http://localhost:5000/api/v1/watched-article`,
+          {
+            articleId: id,
+          },
+          axiosConfig
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error updating watching history:", error);
+        toast.error("Failed to update watching history.");
+      }
+    };
+    updateWatchingHistory();
   }, [id, token]);
 
   useEffect(() => {
@@ -61,7 +84,7 @@ const ArticleDetails = () => {
       );
       setSummary(response.data.summary);
       setSentiment(response.data.sentiment);
-      console.log(response.data) // Assuming your Python API returns the summary here
+      console.log(response.data); // Assuming your Python API returns the summary here
     } catch (error) {
       console.error("Error summarizing article:", error);
       toast.error("Failed to summarize article.");
@@ -105,6 +128,29 @@ const ArticleDetails = () => {
     }
   };
 
+  // Function to handle unliking an article
+  const handleUnlikeArticle = async () => {
+    try {
+      const axiosConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/unlike-article",
+        { articleId: id },
+        axiosConfig
+      );
+
+      setLiked(false); // Update liked state to false
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error unliking article:", error);
+      toast.error("Failed to unlike article.");
+    }
+  };
+
   if (!article) return <p className="text-center mt-10 text-lg">Loading...</p>;
 
   return (
@@ -132,11 +178,10 @@ const ArticleDetails = () => {
               Sentiment Analysis
             </button>
 
-            {/* Like (Heart Icon) */}
+            {/* Like/Unlike (Heart Icon) */}
             <button
               className="focus:outline-none"
-              onClick={handleLikeArticle}
-              disabled={liked} // Disable if already liked
+              onClick={liked ? handleUnlikeArticle : handleLikeArticle}
             >
               <FontAwesomeIcon
                 icon={liked ? solidHeart : regularHeart}
