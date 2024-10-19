@@ -17,6 +17,7 @@ const ArticleDetails = () => {
   const [summary, setSummary] = useState(null); // State to hold summary
   const [sentiment, setSentiment] = useState(null); // State to hold sentiment
   const [liked, setLiked] = useState(false); // To track whether article is liked
+  const[translatedtext,SetTranslatedText]=useState(null);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -95,13 +96,13 @@ const ArticleDetails = () => {
   const handleSentimentAnalysis = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/sentiment", // Replace with your Python API endpoint
+        "http://127.0.0.1:5000/translate_to_hindi", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
-      setSentiment(response.data.sentiment); // Assuming your Python API returns the sentiment here
+      SetTranslatedText(response.data.hindi_translation); // Assuming your Python API returns the sentiment here
     } catch (error) {
-      console.error("Error analyzing sentiment:", error);
-      toast.error("Failed to analyze sentiment.");
+      console.error("Error translating:", error);
+      toast.error("Failed to Translate to Hindi.");
     }
   };
 
@@ -172,7 +173,7 @@ const ArticleDetails = () => {
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
               onClick={handleSentimentAnalysis}
             >
-              Sentiment Analysis
+              Translate to Hindi
             </button>
 
             {/* Like/Unlike (Heart Icon) */}
@@ -193,8 +194,17 @@ const ArticleDetails = () => {
           {article.Author} -{" "}
           {new Date(article["Date published"]).toLocaleDateString()}
         </p>
+        <div className="prose lg:prose-xl text-gray-700 m-3">
+          {translatedtext ? (
+            <p>
+              <strong>Translation:</strong> {translatedtext}
+            </p>
+          ) : (
+            <p>{article["Article text"]}</p>
+          )}
+        </div>
 
-        <div className="prose lg:prose-xl text-gray-700">
+        <div className="prose lg:prose-xl text-gray-700 m-3">
           {summary ? (
             <p>
               <strong>Summary:</strong> {summary}
@@ -203,6 +213,7 @@ const ArticleDetails = () => {
             <p>{article["Article text"]}</p>
           )}
         </div>
+        
 
         {sentiment && (
           <div className="mt-4">
