@@ -41,6 +41,32 @@ const Articles = () => {
   }, [category, token]);
 
   useEffect(() => {
+    const fetchRecommendedArticles = async () => {
+      let axiosConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/v1/recommended-articles",
+          {},
+          axiosConfig
+        );
+        console.log(response.data);
+        if (response.data.recommendedArticles.length == 0) {
+          return;
+        }
+        setArticleList(response.data.recommendedArticles);
+      } catch (error) {
+        console.error("Error fetching recommended articles:", error);
+        setError("Error fetching recommended articles.");
+      }
+    };
+    fetchRecommendedArticles();
+  }, [category, token]);
+
+  useEffect(() => {
     if (token === "") {
       navigate("/login");
       toast.warn("Please login first to access dashboard");

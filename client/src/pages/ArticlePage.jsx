@@ -17,7 +17,7 @@ const ArticleDetails = () => {
   const [summary, setSummary] = useState(null); // State to hold summary
   const [sentiment, setSentiment] = useState(null); // State to hold sentiment
   const [liked, setLiked] = useState(false); // To track whether article is liked
-  const[translatedtext,SetTranslatedText]=useState(null);
+  const [translatedtext, SetTranslatedText] = useState(null);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -80,7 +80,7 @@ const ArticleDetails = () => {
   const handleSummarization = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/summarize_and_sentiment", // Replace with your Python API endpoint
+        "http://127.0.0.1:5001/summarize_and_sentiment", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
       setSummary(response.data.summary);
@@ -96,7 +96,7 @@ const ArticleDetails = () => {
   const handleSentimentAnalysis = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/translate_to_hindi", // Replace with your Python API endpoint
+        "http://127.0.0.1:5001/translate_to_hindi", // Replace with your Python API endpoint
         { text: article["Article text"] }
       );
       SetTranslatedText(response.data.hindi_translation); // Assuming your Python API returns the sentiment here
@@ -213,7 +213,6 @@ const ArticleDetails = () => {
             <p>{article["Article text"]}</p>
           )}
         </div>
-        
 
         {sentiment && (
           <div className="mt-4">

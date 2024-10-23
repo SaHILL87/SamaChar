@@ -1,3 +1,5 @@
+import axios from "axios";
+import articles from "../models/article.models.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
@@ -110,4 +112,44 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-export { login, dashboard, getAllUsers, register, getProfile, updateProfile };
+const getRecommendedArticles = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const watchedArticles = user?.watchedArticles.map((id) => String(id));
+    const pythonResponse = await axios.post(`http://127.0.0.1:5001/recommend`, {
+      object_ids: watchedArticles,
+    });
+    const recommendedArticleMap = pythonResponse.data;
+
+    // Collect all unique recommended article IDs
+    const recommendedIds = Object.values(recommendedArticleMap).flat();
+
+    if (recommendedIds.length === 0) {
+      return res.status(200).json({ recommendedArticles: [] });
+    }
+
+    // Fetch the actual articles from your MongoDB using the recommended IDs
+    const recommendedArticles = await articles.find({
+      _id: { $in: recommendedIds },
+    });
+
+    res.status(200).json({ recommendedArticles });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching recommended articles" });
+  }
+};
+
+export {
+  login,
+  dashboard,
+  getAllUsers,
+  register,
+  getProfile,
+  updateProfile,
+  getRecommendedArticles,
+};
