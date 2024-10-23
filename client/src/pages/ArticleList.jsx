@@ -78,7 +78,7 @@ const Articles = () => {
       <Navbar />
       <div className="p-4 sm:p-8 bg-[#F3F4F6] min-h-screen">
         <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-[#1E3A8A]">
-          {category ? `News in ${category}` : "Latest News"}
+          {category ? `News in ${category}` : "Recommended News"}
         </h1>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}

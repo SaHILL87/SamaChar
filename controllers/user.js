@@ -2,6 +2,7 @@ import axios from "axios";
 import articles from "../models/article.models.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+// import sendEmail from "../utils/mail.js";
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -48,8 +49,10 @@ const getAllUsers = async (req, res) => {
 
 const register = async (req, res) => {
   let foundUser = await User.findOne({ email: req.body.email });
+
   if (foundUser === null) {
     let { username, email, password, categories } = req.body;
+
     if (username.length && email.length && password.length) {
       const person = new User({
         name: username,
@@ -57,7 +60,22 @@ const register = async (req, res) => {
         password: password,
         categories: categories, // Save selected categories
       });
+
       await person.save();
+
+      // Send welcome email
+      const emailSubject = "Welcome to Our Website!";
+      const emailMessage = `Hi ${username},\n\nThank you for registering on our website. We're excited to have you!`;
+
+      try {
+        // await sendEmail(email, emailSubject, emailMessage);
+      } catch (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({
+          msg: "Registration successful, but failed to send welcome email.",
+        });
+      }
+
       return res.status(201).json({ person });
     } else {
       return res
@@ -119,7 +137,9 @@ const getRecommendedArticles = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const watchedArticles = user?.watchedArticles.map((id) => String(id));
+    const watchedArticles = user?.watchedArticles
+      .slice(-5)
+      .map((id) => String(id));
     const pythonResponse = await axios.post(`http://127.0.0.1:5001/recommend`, {
       object_ids: watchedArticles,
     });
