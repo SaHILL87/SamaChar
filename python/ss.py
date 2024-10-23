@@ -45,7 +45,7 @@ def clean_text(text):
     
     return text
 
-def summarize_text(text, max_length=100, min_length=60, length_penalty=2.0):
+def summarize_text(text, max_length=100, min_length=60, length_penalty=1.0):
     inputs = bart_tokenizer.encode("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True)
     summary_ids = bart_model.generate(
         inputs, 
@@ -53,7 +53,7 @@ def summarize_text(text, max_length=100, min_length=60, length_penalty=2.0):
         min_length=min_length, 
         length_penalty=length_penalty, 
         num_beams=4, 
-        early_stopping=False
+        early_stopping=True
     )
     summary = bart_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
     return summary
