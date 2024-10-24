@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Search, Filter, User, Newspaper, Heart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaNewspaper } from "react-icons/fa";
 import axios from "axios";
 
 export default function Navbar() {
@@ -36,8 +37,16 @@ export default function Navbar() {
     navigate(`/article/${articleId}`);
   };
 
+  const handleLatestNews = () => {
+    navigate("/latest-news");
+  };
+
   const handleFilterApply = () => {
     navigate(`/articles?category=${category}`);
+  };
+
+  const handleRemoveCategory = () => {
+    setCategory(""); // Clear the selected category
   };
 
   return (
@@ -78,13 +87,18 @@ export default function Navbar() {
 
           <div className="flex items-center space-x-4">
             <button
+              onClick={handleLatestNews}
+              className="hover:bg-[#3B5DAA] bg-[#1E3A8A] text-white p-3 rounded-full transition duration-300 hover:shadow-lg"
+            >
+              <FaNewspaper size={24} />
+            </button>
+            <button
               onClick={handleFilterToggle}
               className="hover:bg-[#3B5DAA] bg-[#1E3A8A] text-white p-3 rounded-full transition duration-300 hover:shadow-lg"
             >
               <Filter size={24} />
             </button>
 
-            {/* Add the heart icon */}
             <Link to="/liked-articles">
               <button className="hover:bg-[#3B5DAA] bg-[#1E3A8A] text-white p-3 rounded-full transition duration-300 hover:shadow-lg">
                 <Heart size={24} />
@@ -103,6 +117,39 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      {isFilterOpen && (
+        <div className="container mx-auto mt-4 p-4 bg-white text-black rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold mb-2">Filters</h3>
+          <div className="flex flex-wrap gap-4">
+            <select
+              className="p-2 border rounded bg-gray-200 text-gray-800"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Category</option>
+              <option value="news">News</option>
+              <option value="business">Business</option>
+              <option value="health">Health</option>
+            </select>
+
+            <button
+              onClick={handleFilterApply}
+              className="bg-blue-500 text-white p-2 rounded-lg shadow hover:shadow-lg transition duration-300"
+            >
+              Apply Filters
+            </button>
+
+            {category && (
+              <button
+                onClick={handleRemoveCategory}
+                className="bg-red-500 text-white p-2 rounded-lg shadow hover:shadow-lg transition duration-300"
+              >
+                Remove Category
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
