@@ -25,12 +25,13 @@ const Articles = () => {
       try {
         let url = "http://localhost:5000/api/v1/articles";
 
+        // Fetch category-based articles if a category is selected
         if (category) {
           url = `http://localhost:5000/api/v1/articles/category?category=${category}`;
         }
 
         const response = await axios.get(url, axiosConfig);
-        setArticleList(response.data?.articleList);
+        setArticleList(response.data?.articleList || []); // Fallback to empty array
       } catch (error) {
         console.error("Error fetching articles:", error);
         setError("Error fetching articles.");
@@ -42,25 +43,26 @@ const Articles = () => {
 
   useEffect(() => {
     const fetchRecommendedArticles = async () => {
-      let axiosConfig = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/v1/recommended-articles",
-          {},
-          axiosConfig
-        );
-        console.log(response.data);
-        if (response.data.recommendedArticles.length == 0) {
-          return;
+      if (!category) {
+        // Only fetch when no category is set
+        let axiosConfig = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        try {
+          const response = await axios.post(
+            "http://localhost:5000/api/v1/recommended-articles",
+            {},
+            axiosConfig
+          );
+          if (response.data.recommendedArticles.length > 0) {
+            setArticleList(response.data.recommendedArticles);
+          }
+        } catch (error) {
+          console.error("Error fetching recommended articles:", error);
+          setError("Error fetching recommended articles.");
         }
-        setArticleList(response.data.recommendedArticles);
-      } catch (error) {
-        console.error("Error fetching recommended articles:", error);
-        setError("Error fetching recommended articles.");
       }
     };
     fetchRecommendedArticles();
@@ -84,7 +86,7 @@ const Articles = () => {
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {articleList?.map((article) => (
+          {articleList.map((article) => (
             <Link to={`/article/${article._id}`} key={article._id}>
               <div className="bg-white p-6 h-[17rem] rounded-lg shadow-md hover:shadow-lg hover:border-[#1E3A8A] border border-transparent transition-all duration-300 flex flex-col justify-between">
                 <div>

@@ -12,6 +12,7 @@ import Articles from "./pages/ArticleList";
 import ArticleDetails from "./pages/ArticlePage";
 import Profile from "./pages/Profile";
 import LikedArticles from "./pages/LikedArticles";
+import NewsDashboard from "./pages/Latestnews";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "liked-articles",
         element: <LikedArticles />,
+      },
+      {
+        path: "latest-news",
+        element: <NewsDashboard />,
       },
     ],
   },
