@@ -5,7 +5,8 @@ import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons"; // Unliked state
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
+import { Minus, Plus, Type } from "lucide-react";
 
 const ArticleDetails = () => {
   const navigate = useNavigate();
@@ -14,10 +15,24 @@ const ArticleDetails = () => {
   const [token, setToken] = useState(
     JSON.parse(localStorage.getItem("auth")) || ""
   );
-  const [summary, setSummary] = useState(null); // State to hold summary
-  const [sentiment, setSentiment] = useState(null); // State to hold sentiment
-  const [liked, setLiked] = useState(false); // To track whether article is liked
+  const [summary, setSummary] = useState(null);
+  const [sentiment, setSentiment] = useState(null);
+  const [liked, setLiked] = useState(false);
   const [translatedtext, SetTranslatedText] = useState(null);
+  const [textSize, setTextSize] = useState(16); // Base font size in pixels
+
+  // Text size adjustment functions
+  const increaseTextSize = () => {
+    if (textSize < 24) { // Maximum size limit
+      setTextSize(prev => prev + 2);
+    }
+  };
+
+  const decreaseTextSize = () => {
+    if (textSize > 12) { // Minimum size limit
+      setTextSize(prev => prev - 2);
+    }
+  };
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -76,37 +91,33 @@ const ArticleDetails = () => {
     }
   }, [token, navigate]);
 
-  // Function to handle article summarization
   const handleSummarization = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5001/summarize_and_sentiment", // Replace with your Python API endpoint
+        "http://127.0.0.1:5001/summarize_and_sentiment",
         { text: article["Article text"] }
       );
       setSummary(response.data.summary);
       setSentiment(response.data.sentiment);
-      console.log(response.data); // Assuming your Python API returns the summary here
     } catch (error) {
       console.error("Error summarizing article:", error);
       toast.error("Failed to summarize article.");
     }
   };
 
-  // Function to handle sentiment analysis
   const handleSentimentAnalysis = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5001/translate_to_hindi", // Replace with your Python API endpoint
+        "http://127.0.0.1:5001/translate_to_hindi",
         { text: article["Article text"] }
       );
-      SetTranslatedText(response.data.hindi_translation); // Assuming your Python API returns the sentiment here
+      SetTranslatedText(response.data.hindi_translation);
     } catch (error) {
       console.error("Error translating:", error);
       toast.error("Failed to Translate to Hindi.");
     }
   };
 
-  // Function to handle liking an article
   const handleLikeArticle = async () => {
     try {
       const axiosConfig = {
@@ -121,7 +132,7 @@ const ArticleDetails = () => {
         axiosConfig
       );
 
-      setLiked(true); // Update liked state to true
+      setLiked(true);
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error liking article:", error);
@@ -129,7 +140,6 @@ const ArticleDetails = () => {
     }
   };
 
-  // Function to handle unliking an article
   const handleUnlikeArticle = async () => {
     try {
       const axiosConfig = {
@@ -144,7 +154,7 @@ const ArticleDetails = () => {
         axiosConfig
       );
 
-      setLiked(false); // Update liked state to false
+      setLiked(false);
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error unliking article:", error);
@@ -162,7 +172,27 @@ const ArticleDetails = () => {
           <h1 className="text-4xl font-bold mb-4 text-[#1E3A8A]">
             {article.Headline}
           </h1>
-          <div className="flex space-x-4">
+          <div className="flex items-center space-x-4">
+            {/* Text Size Controls */}
+            <div className="flex items-center space-x-2 bg-white px-3 py-2 rounded">
+              <Type className="h-4 w-4 text-gray-500" />
+              <button
+                onClick={decreaseTextSize}
+                className="p-1 hover:bg-gray-100 rounded"
+                aria-label="Decrease text size"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+              <span className="text-sm text-gray-600">{textSize}px</span>
+              <button
+                onClick={increaseTextSize}
+                className="p-1 hover:bg-gray-100 rounded"
+                aria-label="Increase text size"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
               onClick={handleSummarization}
@@ -176,7 +206,6 @@ const ArticleDetails = () => {
               Translate to Hindi
             </button>
 
-            {/* Like/Unlike (Heart Icon) */}
             <button
               className="focus:outline-none"
               onClick={liked ? handleUnlikeArticle : handleLikeArticle}
@@ -194,7 +223,10 @@ const ArticleDetails = () => {
           {article.Author} -{" "}
           {new Date(article["Date published"]).toLocaleDateString()}
         </p>
-        <div className="prose lg:prose-xl text-gray-700 m-3">
+        <div 
+          className="prose lg:prose-xl text-gray-700 m-3"
+          style={{ fontSize: `${textSize}px` }}
+        >
           {translatedtext ? (
             <p>
               <strong>Translation:</strong> {translatedtext}
@@ -204,18 +236,19 @@ const ArticleDetails = () => {
           )}
         </div>
 
-        <div className="prose lg:prose-xl text-gray-700 m-3">
-          {summary ? (
+        <div 
+          className="prose lg:prose-xl text-gray-700 m-3"
+          style={{ fontSize: `${textSize}px` }}
+        >
+          {summary && (
             <p>
               <strong>Summary:</strong> {summary}
             </p>
-          ) : (
-            <p>{article["Article text"]}</p>
           )}
         </div>
 
         {sentiment && (
-          <div className="mt-4">
+          <div className="mt-4" style={{ fontSize: `${textSize}px` }}>
             <p className="text-lg">
               <strong>Sentiment:</strong> {sentiment}
             </p>

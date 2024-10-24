@@ -21,6 +21,18 @@ const sendEmail = async (to, subject, message) => {
       to,
       subject,
       text: message,
+    //   attachments: [
+    //     {
+    //       filename: 'image1.jpg',  // File name that will appear in the email
+    //       path: './path-to-image/image1.jpg',  // Local or remote path to the image
+    //       cid: 'image1'  // Content ID to reference the image in the HTML if needed
+    //     },
+    //     {
+    //       filename: 'image2.png',
+    //       path: './path-to-image/image2.png',
+    //       cid: 'image2'
+    //     }
+    //   ],
     });
 
     console.log("Email sent: %s", info.messageId);

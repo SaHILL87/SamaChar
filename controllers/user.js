@@ -80,13 +80,10 @@ At [Your Website Name], we’re committed to making your experience unforgettabl
 
 Don't hesitate to explore and reach out to our support team if you have any questions.
 
-![Image 1: Happy Customers](https://via.placeholder.com/300x150)  
-![Image 2: Exciting Features](https://via.placeholder.com/300x150)
-
 Once again, thank you for joining us—we’re excited to have you on board!
 
 Warm regards,  
-The [Your Website Name] Team
+The Samachar Team
 `;
 
       try {
