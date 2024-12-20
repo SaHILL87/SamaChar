@@ -9,9 +9,9 @@ export default function LandingPage() {
       <header className="px-4 lg:px-6 h-14 flex items-center">
         <Link className="flex items-center justify-center" href="#">
           <Newspaper className="h-6 w-6" />
-          <span className="sr-only">NewsApp</span>
+          <p className="text-black font-bold p-2 text-lg ">SamaChar</p>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        {/* <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
             href="#features"
@@ -30,7 +30,7 @@ export default function LandingPage() {
           >
             Pricing
           </Link>
-        </nav>
+        </nav> */}
       </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gray-100 max-h-screen flex items-center">
@@ -96,7 +96,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section
+        {/*<section
           id="testimonials"
           className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 "
         >
@@ -338,9 +338,9 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+      {/* <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-xs text-gray-500">
           © 2024 NewsApp. All rights reserved.
         </p>
@@ -352,7 +352,7 @@ export default function LandingPage() {
             Privacy
           </Link>
         </nav>
-      </footer>
+      </footer> */}
     </div>
   );
 }

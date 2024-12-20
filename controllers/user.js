@@ -64,21 +64,13 @@ const register = async (req, res) => {
       await person.save();
 
       // Send welcome email
-      const emailSubject = "Welcome to Our Community! 🎉"
+      const emailSubject = "Welcome to Our Community! 🎉";
       const emailMessage = `
 Hi ${username},
 
-Welcome to [Your Website Name]! 🎉 We’re thrilled to have you with us and can’t wait for you to explore everything we have to offer.
+Welcome to SamaChar! 🎉 We’re thrilled to have you with us and can’t wait for you to explore everything we have to offer.
 
-At [Your Website Name], we’re committed to making your experience unforgettable. Whether you’re here to [mention key features, e.g., shop the latest trends, connect with like-minded individuals, etc.], we’ve got something for everyone.
-
-**Here’s a sneak peek of what’s waiting for you:**
-
-📦 **Exclusive Offers**: Get access to deals and discounts before anyone else.
-
-🌟 **Personalized Recommendations**: We’ll help you find exactly what you’re looking for.
-
-Don't hesitate to explore and reach out to our support team if you have any questions.
+At SamaChar, we’re committed to making your experience unforgettable.
 
 Once again, thank you for joining us—we’re excited to have you on board!
 

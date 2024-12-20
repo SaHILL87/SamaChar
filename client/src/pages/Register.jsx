@@ -150,7 +150,7 @@ const Login = () => {
               </div>
 
               {/* Category Selection */}
-              <div className="category-selection">
+              <div className="category-selection justify-items-start">
                 <h3>Select your interests:</h3>
                 <div>
                   <input

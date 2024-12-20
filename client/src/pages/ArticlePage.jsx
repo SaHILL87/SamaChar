@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
-import { Minus, Plus, Type } from "lucide-react";
+import { Minus, Plus, Type, Loader2 } from "lucide-react";
 
 const ArticleDetails = () => {
   const navigate = useNavigate();
@@ -19,21 +19,24 @@ const ArticleDetails = () => {
   const [sentiment, setSentiment] = useState(null);
   const [liked, setLiked] = useState(false);
   const [translatedtext, SetTranslatedText] = useState(null);
-  const [textSize, setTextSize] = useState(16); // Base font size in pixels
+  const [textSize, setTextSize] = useState(16);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
 
-  // Text size adjustment functions
+  // Text size adjustment functions remain the same
   const increaseTextSize = () => {
-    if (textSize < 24) { // Maximum size limit
-      setTextSize(prev => prev + 2);
+    if (textSize < 24) {
+      setTextSize((prev) => prev + 2);
     }
   };
 
   const decreaseTextSize = () => {
-    if (textSize > 12) { // Minimum size limit
-      setTextSize(prev => prev - 2);
+    if (textSize > 12) {
+      setTextSize((prev) => prev - 2);
     }
   };
 
+  // Previous useEffect hooks remain the same
   useEffect(() => {
     const fetchArticle = async () => {
       let axiosConfig = {
@@ -92,6 +95,7 @@ const ArticleDetails = () => {
   }, [token, navigate]);
 
   const handleSummarization = async () => {
+    setIsSummarizing(true);
     try {
       const response = await axios.post(
         "http://127.0.0.1:5001/summarize_and_sentiment",
@@ -102,10 +106,13 @@ const ArticleDetails = () => {
     } catch (error) {
       console.error("Error summarizing article:", error);
       toast.error("Failed to summarize article.");
+    } finally {
+      setIsSummarizing(false);
     }
   };
 
   const handleSentimentAnalysis = async () => {
+    setIsTranslating(true);
     try {
       const response = await axios.post(
         "http://127.0.0.1:5001/translate_to_hindi",
@@ -115,9 +122,12 @@ const ArticleDetails = () => {
     } catch (error) {
       console.error("Error translating:", error);
       toast.error("Failed to Translate to Hindi.");
+    } finally {
+      setIsTranslating(false);
     }
   };
 
+  // Like/Unlike handlers remain the same
   const handleLikeArticle = async () => {
     try {
       const axiosConfig = {
@@ -194,16 +204,20 @@ const ArticleDetails = () => {
             </div>
 
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200 flex items-center space-x-2 disabled:opacity-50"
               onClick={handleSummarization}
+              disabled={isSummarizing}
             >
-              Summarize
+              {isSummarizing && <Loader2 className="h-4 w-4 animate-spin" />}
+              <span>Summarize</span>
             </button>
             <button
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200 flex items-center space-x-2 disabled:opacity-50"
               onClick={handleSentimentAnalysis}
+              disabled={isTranslating}
             >
-              Translate to Hindi
+              {isTranslating && <Loader2 className="h-4 w-4 animate-spin" />}
+              <span>Translate to Hindi</span>
             </button>
 
             <button
@@ -223,11 +237,16 @@ const ArticleDetails = () => {
           {article.Author} -{" "}
           {new Date(article["Date published"]).toLocaleDateString()}
         </p>
-        <div 
+        <div
           className="prose lg:prose-xl text-gray-700 m-3"
           style={{ fontSize: `${textSize}px` }}
         >
-          {translatedtext ? (
+          {isTranslating ? (
+            <div className="flex items-center justify-center space-x-2 py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+              <span>Translating...</span>
+            </div>
+          ) : translatedtext ? (
             <p>
               <strong>Translation:</strong> {translatedtext}
             </p>
@@ -236,14 +255,21 @@ const ArticleDetails = () => {
           )}
         </div>
 
-        <div 
+        <div
           className="prose lg:prose-xl text-gray-700 m-3"
           style={{ fontSize: `${textSize}px` }}
         >
-          {summary && (
-            <p>
-              <strong>Summary:</strong> {summary}
-            </p>
+          {isSummarizing ? (
+            <div className="flex items-center justify-center space-x-2 py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+              <span>Generating summary...</span>
+            </div>
+          ) : (
+            summary && (
+              <p>
+                <strong>Summary:</strong> {summary}
+              </p>
+            )
           )}
         </div>
 

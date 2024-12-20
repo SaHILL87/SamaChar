@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Calendar, Share2, Clock } from "lucide-react";
+import { Calendar, Share2, Clock, Loader2 } from "lucide-react";
 
+// Format date helper function
 const formatDate = (dateStr) => {
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",
@@ -11,6 +12,7 @@ const formatDate = (dateStr) => {
   });
 };
 
+// NewsCard component
 const NewsCard = ({ article }) => (
   <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
     <h2 className="text-xl font-bold mb-3 text-gray-800">{article.title}</h2>
@@ -30,60 +32,70 @@ const NewsCard = ({ article }) => (
       >
         Read More
       </a>
-      <Share2
-        size={20}
-        className="text-gray-500 hover:text-gray-700 cursor-pointer"
-        onClick={() => navigator.clipboard.writeText(article.url)}
-      />
+      <Share2 size={20} className="text-gray-500 hover:text-gray-700" />
     </div>
   </div>
 );
 
-export default function NewsDashboard() {
-  const [data, setData] = useState({ articles: [] });
+const App = () => {
+  const [articles, setArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the JSON file
-    fetch("/cnn_articles_maharashtra_20241023_230431.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+    const fetchArticles = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch("http://localhost:5001/scrape-articles");
+        if (response.ok) {
+          const data = await response.json();
+          setArticles(data);
+        } else {
+          setError("Failed to fetch articles");
         }
-        return response.json();
-      })
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching data:", error));
+      } catch (error) {
+        setError("Error fetching articles: " + error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticles();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      {/* Header */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold mb-4 text-gray-800">
-            News Dashboard
-          </h1>
-          <div className="flex items-center gap-6 text-gray-600">
-            <div className="flex items-center gap-2">
-              <Calendar size={20} />
-              <span>Last Updated: {formatDate(data.metadata?.timestamp)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-medium">
-                {data.metadata?.location.state},{" "}
-                {data.metadata?.location.country}
-              </span>
-            </div>
-          </div>
-        </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Scraped Articles</h1>
 
-        {/* Articles */}
+      {/* Info Alert */}
+      <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+        <p className="text-blue-700">
+          Please note: The scraping process may take up to 5 minutes to
+          complete. Thank you for your patience.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center p-12 space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <p className="text-gray-600">Scraping articles, please wait...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+          <p className="text-red-700">{error}</p>
+        </div>
+      ) : articles.length > 0 ? (
         <div>
-          {data.articles.map((article, index) => (
+          {articles.map((article, index) => (
             <NewsCard key={index} article={article} />
           ))}
         </div>
-      </div>
+      ) : (
+        <p className="text-center text-gray-600">No articles available</p>
+      )}
     </div>
   );
-}
+};
+
+export default App;

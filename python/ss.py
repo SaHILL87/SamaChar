@@ -8,6 +8,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from bson import ObjectId
 from deep_translator import GoogleTranslator
+from scrape import Location, LocationBasedCNNScraper
+import asyncio
 
 app = Flask(__name__)
 CORS(app)
@@ -144,6 +146,23 @@ def recommend():
         similar_articles[str(input_article['_id'])] = [str(all_articles[idx]['_id']) for idx in similar_indices if idx >= len(input_articles)]
 
     return jsonify(similar_articles)
+
+
+# Initialize a scraper instance
+location = Location(state="Maharashtra", country="India")
+scraper = LocationBasedCNNScraper(location=location, max_articles=5, max_concurrent=3)
+
+@app.route('/scrape-articles', methods=['GET'])
+def scrape_articles():
+    """API endpoint to get the scraped articles."""
+    try:
+        # Run the scraper and get articles
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        articles = loop.run_until_complete(scraper.scrape_articles())
+        return jsonify(articles), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True,port=5001)
